@@ -9,6 +9,8 @@ var util = require('util'),
 	Tracer = require('./lib/tracer.js'),
 	Formatter = require('./lib/formatter.js');
 
+const FN_WRAPPER_IMPORT = 'const __njstrace__fnWrapper = require("njstrace/lib/fnWrapper");\n';
+
 var DEFAULT_CONFIG = {
 	enabled: true,
 	files: ['**/*.js', '!**/node_modules/**'],
@@ -126,6 +128,7 @@ NJSTrace.prototype.hijackCompile = function() {
 
 		if (instrument) {
 			self.log('Instrumenting:', filename);
+			console.log('Instrumenting:', filename);
 
 			// The content of a node Module needs to get wrapped in a function, otherwise it might be invalid (esprima won't like it otherwise).
 			// We wrap it like node.js is wrapping (see Module.prototype._compile), since this logic might change we
@@ -148,11 +151,17 @@ NJSTrace.prototype.hijackCompile = function() {
 					content = content.substring(Module.wrapper[0].length, content.length - Module.wrapper[1].length);
 				}
 
+				content = FN_WRAPPER_IMPORT + content;
+
 				self.log('Done:', filename);
 			} catch(ex) {
 				self.log('ERROR: Error instrumenting file:', filename, ', Exception:', ex);
 			}
 		}
+
+		console.log('njsTrace.js {160}', content); // REMOVE: remove console log
+
+		self.log('Instrumented %s:', filename, content);
 
 		// And continue with the original compile...
 		origCompile.call(this, content, filename);
