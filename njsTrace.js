@@ -8,8 +8,10 @@ var util = require('util'),
 	Output = require('./lib/output.js'),
 	Tracer = require('./lib/tracer.js'),
 	Formatter = require('./lib/formatter.js');
+const fnWrapper =	require('./lib/fnWrapper');
 
-const FN_WRAPPER_IMPORT = 'const __njstrace__fnWrapper = require("njstrace/lib/fnWrapper");\n';
+const FN_WRAPPER_IMPORT = '';
+// const FN_WRAPPER_IMPORT = 'const __njstrace__fnWrapper = require("njstrace/lib/fnWrapper");\n';
 
 var DEFAULT_CONFIG = {
 	enabled: true,
@@ -144,7 +146,7 @@ NJSTrace.prototype.hijackCompile = function() {
 			}
 
 			try {
-				content = injector.injectTracing(filename, content, self.config.wrapFunctions, self.config.inspectArgs, wrapped);
+				content = injector.injectTracing(filename, content, self.config.wrapFunctions, self.config.inspectArgs, wrapped, relPath);
 
 				// If we wrapped the content we need now to remove it as node.js original compile will do it...
 				if (Module.wrapper.length === 2) {
@@ -159,9 +161,9 @@ NJSTrace.prototype.hijackCompile = function() {
 			}
 		}
 
-		console.log('njsTrace.js {160}', content); // REMOVE: remove console log
+		// console.log('njsTrace.js {160}', content); // REMOVE: remove console log
 
-		self.log('Instrumented %s:', filename, content);
+		self.log('Instrumented %s:', filename);
 
 		// And continue with the original compile...
 		origCompile.call(this, content, filename);
@@ -174,6 +176,9 @@ NJSTrace.prototype.hijackCompile = function() {
  */
 NJSTrace.prototype.setGlobalFunction = function() {
 	var self = this;
+
+	global.__njstrace__fnWrapper = fnWrapper;
+
 
 	this.log('Setting global.__njsTraceEntry__ function');
 	global.__njsTraceEntry__ = function(args) {

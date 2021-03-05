@@ -29,7 +29,10 @@
     "extend": "^3.0.2",
     "falafel": "^2.2.4",
     "idgen": "^2.1.0",
-    "minimatch": "^3.0.4"
+    "minimatch": "^3.0.4",
+    "source-map": "~0.6.1",
+    "winston": "^3.3.3",
+    "winston-elasticsearch": "^0.15.2"
   },
   "devDependencies": {
     "@types/falafel": "^2.1.0",
