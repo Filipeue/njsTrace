@@ -143,7 +143,7 @@ NJSTrace.prototype.hijackCompile = function() {
 			}
 
 			try {
-				content = injector.injectTracing(filename, content, self.config.wrapFunctions, self.config.inspectArgs, wrapped, relPath);
+				content = injector.injectTracing(filename, content, self.config.wrapFunctions, self.config.inspectArgs, wrapped);
 
 				// If we wrapped the content we need now to remove it as node.js original compile will do it...
 				if (Module.wrapper.length === 2) {
